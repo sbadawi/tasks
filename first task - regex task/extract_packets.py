@@ -1,44 +1,179 @@
 import re
 
+class Packet:
+
+    def __init__(self, src=None,dst=None,type=None,length=None,nb_segs=None,RSS_hash=None,RSS_queue=None,hw_ptype=None,sw_ptype=None,l2_len=None,inner_l2_len=None,l3_len=None,inner_l3_len=None,Receive_queue=None, ol_flags=None):
+        self.src = src
+        self.dst = dst
+        self.type = type
+        self.length = length
+        self.nb_segs = nb_segs
+        self.RSS_hash = RSS_hash
+        self.RSS_queue = RSS_queue
+        self.hw_ptype = hw_ptype
+        self.sw_ptype = sw_ptype
+        self.l2_len = l2_len
+        self.inner_l2_len = inner_l2_len
+        self.l3_len = l3_len
+        self.inner_l3_len = inner_l3_len
+        self.Receive_queue = Receive_queue
+        self.ol_flags = ol_flags
+
+
+# open packets file
 packets_file = open('packets.txt')
-print(packets_file)
-print("Name : ", packets_file.name)
-# print("The content of the file is : ")
+# Get the contents of the file
 packets_file_content = packets_file.read()
-
-
-
+packets_info = []
+# Seperate the contents of the file based on the keyword 'port' as Each packet is received on one of two ports
 packets = packets_file_content.split('port ')
-packets.pop(0)
-print("The number of packets : ", len(packets))
+packets.pop(0) # remove the first element of the list since it doesn't contain anything
+print("The number of packets : ", len(packets)) # print the number of the packets
 
-# print("the first packet : ", packets[0])
+search_pattern = " (src)=([\w:]*) [\S]* (dst)=([\w:]*) [\S]* (type)=([\w]*) [\S]* (length)=([\w]*) [\S]* (nb_segs)=([\w]*) [\S]* (RSS hash)=([\w]*) [\S]* (RSS queue)=([\w]*) [[\S]* (hw ptype): ([\w ]*)]* [[\S]* (sw ptype): ([\w ]*) [\S]*]*[ \- ]* (l2_len)=([\w]*)([ \- ]* (inner_l2_len)=([\w]*))*([ \- ]* (l3_len)=([\w]*))*([ \- ]* (inner_l3_len)=([\w]*))*([ \- ]* (l4_len)=([\w]*))*[ \- ]*(Receive queue)=([\w]*)[[\n ]*(ol_flags): ([\w ]*)]*"
 for packet in packets:
-    # print("The current packet : port", packet)
-    # test_str = re.search('src=[\w:]*', packet)
-    # print("The output of the search : ", test_str)
-    # print(" => first group : ", test_str.group(0))
-    #str_= str(teest).split("src=")
-    # print("Teses :", str_)
+    index = 1
+    packet_h = Packet()
+    packet_analysis = re.search(search_pattern, packet)
     
-        #test_packet = re.search('src=[\w:]* [\S]* dst=[\w:]* [\S]*', packet)
-        #print("The src in this packet : ", ) # .group(0).split('src=')[1])
-        print(packet)
-        # print("The dst in this packet : ", re.search('dst=[\w:]*', packet).group(0).split('dst=')[1])
-        # print("The type in this packet : ", re.search('type=[\w]*', packet).group(0).split('type=')[1])
-        # print("The length in this packet : ", re.search('length=[\w]*', packet).group(0).split('length=')[1])
-        # print("The nb_segs in this packet : ", re.search('nb_segs=[\w]*', packet).group(0).split('nb_segs=')[1])
-        # print("The RSS hash in this packet : ", re.search('RSS hash=[\w]*', packet).group(0).split('RSS hash=')[1])
-        # print("The RSS queue in this packet : ", re.search('RSS queue=[\w]*', packet).group(0).split('RSS queue=')[1])#hw ptype
-        # print("The hw pytpe in this packet : ", re.search('hw ptype: [\w ]*', packet).group(0).split('hw ptype: ')[1])
-        # print("The sw ptype in this packet : ", re.search('sw ptype: [\w ]*', packet).group(0).split('sw ptype: ')[1])
-        # print("The l2_len in this packet : ", re.search('l2_len=[\w]*', packet).group(0).split('l2_len=')[1])
-        # print("The inner_l2_len in this packet : ", re.search('inner_l2_len=[\w]*', packet).group(0).split('inner_l2_len=')[1])
-        # print("The l3_len in this packet : ", re.search('l3_len=[\w]*', packet).group(0).split('l3_len=')[1])#ol_flags
-        # print("The inner_l3_len in this packet : ", re.search('inner_l3_len=[\w]*', packet).group(0).split('inner_l3_len=')[1])
-        # print("The Receive queue in this packet : ", re.search('Receive queue=[\w]*', packet).group(0).split('Receive queue=')[1])#inner_l2_len
-        # print("The ol_flags in this packet : ", re.search('ol_flags: [\w ]*', packet).group(0).split('ol_flags: ')[1])
+    if(packet_analysis != None): 
+        i = 1
+        for group in packet_analysis.groups():
+            print("The ",i," group  : ", group)
+            i += 1
 
-        print("============================================================")
+        if(packet_analysis.group(index) == 'src'):
+            packet_h.src = packet_analysis.group(index+1)
+            index += 2
+        else:
+            packet_h.src = None  
 
-#print(packets_file_content.split('port '))
+        if(packet_analysis.group(index) == 'dst'):
+            packet_h.dst = packet_analysis.group(index+1)
+            index += 2
+        else:
+            packet_h.dst = None
+
+        if(packet_analysis.group(index) == 'type'):
+            packet_h.type = packet_analysis.group(index+1)
+            index += 2 
+        else:
+            packet_h.type = None
+
+        if(packet_analysis.group(index) == 'length'):
+            packet_h.length = packet_analysis.group(index+1)
+            index += 2
+        else:
+            packet_h.length = None
+
+
+        if(packet_analysis.group(index) == 'nb_segs'):
+            packet_h.nb_segs = packet_analysis.group(index+1)
+            index += 2
+        else:
+            packet_h.nb_segs = None
+
+
+        if(packet_analysis.group(index) == 'RSS hash'):
+            packet_h.rss_hash = packet_analysis.group(index+1)
+            index += 2
+        else:
+            packet_h.rss_hash = None
+
+
+        if(packet_analysis.group(index) == 'RSS queue'):
+            packet_h.rss_queue = packet_analysis.group(index+1)
+            index += 2
+        else:
+            packet_h.rss_queue = None
+
+
+        if(packet_analysis.group(index) == 'hw ptype'):
+            #TODO: split the databy whitespace
+            packet_h.hw_ptype = packet_analysis.group(index+1).split(' ')
+            packet_h.hw_ptype.pop(len(packet_h.hw_ptype)-1)
+            index += 2
+        else:
+            packet_h.hw_ptype = None
+
+
+        if(packet_analysis.group(index) == 'sw ptype'):
+            #TODO: split the databy whitespace
+            packet_h.sw_ptype = packet_analysis.group(index+1).split(' ')
+            packet_h.sw_ptype.pop(len(packet_h.sw_ptype)-1)
+            index += 2
+        else:
+            packet_h.sw_ptype = None
+
+
+        if(packet_analysis.group(index) == 'l2_len'):
+            packet_h.l2_len = packet_analysis.group(index+1)
+            
+        else:
+            packet_h.l2_len = None
+        index += 3
+
+        if(packet_analysis.group(index) == 'inner_l2_len'):
+            packet_h.inner_l2_len = packet_analysis.group(index+1)
+        else:
+            packet_h.inner_l2_len = None
+            print("The inner_l2_len group  index ", index, " : ", packet_analysis.group(index))
+        index += 3
+
+        if(packet_analysis.group(index) == 'l3_len'):
+            packet_h.l3_len = packet_analysis.group(index+1)
+        else:
+            packet_h.l3_len = None
+            print("The l3_len group index ", index, " : ", packet_analysis.group(index))
+        index += 3
+
+        if(packet_analysis.group(index) == 'inner_l3_len'):
+            packet_h.inner_l3_len = packet_analysis.group(index+1)
+        else:
+            packet_h.inner_l3_len = None
+            print("The inner_l3_len group index ", index, " : ", packet_analysis.group(index))
+        index += 3
+
+        if(packet_analysis.group(index) == 'l4_len'):
+            packet_h.l4_len = packet_analysis.group(index+1)
+        else:
+            packet_h.l4_len = None
+            print("The l4_len group  index ", index, ": ", packet_analysis.group(index))
+        index += 2
+
+        if(packet_analysis.group(index) == 'Receive queue'):
+            packet_h.receive_queue = packet_analysis.group(index+1)
+        else:
+            packet_h.receive_queue = None
+            print("The receive_queue group  index ", index, ": ", packet_analysis.group(index))
+
+        index += 2    
+
+
+        if(packet_analysis.group(index) == 'ol_flags'):
+            #TODO: split the databy whitespace
+            packet_h.ol_flags = packet_analysis.group(index+1).split(' ')
+        else:
+            packet_h.ol_flags = None
+            print("The ol_flags group  index ", index, ": ", packet_analysis.group(index))
+
+
+    print("*********************************************************")
+    # append the packet into the list
+    packets_info.append(packet_h)
+print("--------------------------------------------------------------------")
+# printing the data in formatted way    
+for packet in packets_info:
+    print("The src of the packet :", packet.src, " , The dst : ", packet.dst)
+    print("The type : ", packet.type, ", the length : ", packet.length)
+    print("the nb_segs : ",packet.nb_segs, " ,The rss hash : ", packet.rss_hash, ",The rss queue : ", packet.rss_queue)
+    print("The hw ptype : ", packet.hw_ptype," , The sw ptype : ", packet.sw_ptype)
+    print("l2_len : ", packet.l2_len, " , inner l2_len : ", packet.inner_l2_len)
+    print("l3_len : ", packet.l3_len, " , inner l3_len : ", packet.inner_l3_len)
+    print("l4_len : ", packet.l4_len, " , Receive queue : ", packet.receive_queue)
+    print("ol_flags : ", packet.ol_flags)
+    print("============================================================")
+
+
+# close the file
+packets_file.close()
