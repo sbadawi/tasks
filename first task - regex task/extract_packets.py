@@ -21,9 +21,9 @@ class Packet:
 
 
 # open packets file
-packets_file = open('packets.txt')
-# Get the contents of the file
-packets_file_content = packets_file.read()
+with open('packets.txt') as packets_file:
+    # Get the contents of the file
+    packets_file_content = packets_file.read()
 packets_info = []
 # Seperate the contents of the file based on the keyword 'port' as Each packet is received on one of two ports
 packets = packets_file_content.split('port ')
@@ -37,71 +37,60 @@ for packet in packets:
     packet_analysis = re.search(search_pattern, packet)
     
     if(packet_analysis != None): 
-        i = 1
-        for group in packet_analysis.groups():
-            print("The ",i," group  : ", group)
-            i += 1
 
         if(packet_analysis.group(index) == 'src'):
             packet_h.src = packet_analysis.group(index+1)
-            index += 2
+            index += 2 # the number of seperating groups
         else:
             packet_h.src = None  
 
         if(packet_analysis.group(index) == 'dst'):
             packet_h.dst = packet_analysis.group(index+1)
-            index += 2
+            index += 2 # the number of seperating groups
         else:
             packet_h.dst = None
 
         if(packet_analysis.group(index) == 'type'):
             packet_h.type = packet_analysis.group(index+1)
-            index += 2 
+            index += 2 # the number of seperating groups
         else:
             packet_h.type = None
 
         if(packet_analysis.group(index) == 'length'):
             packet_h.length = packet_analysis.group(index+1)
-            index += 2
+            index += 2 # the number of seperating groups
         else:
             packet_h.length = None
 
-
         if(packet_analysis.group(index) == 'nb_segs'):
             packet_h.nb_segs = packet_analysis.group(index+1)
-            index += 2
+            index += 2 # the number of seperating groups
         else:
             packet_h.nb_segs = None
 
-
         if(packet_analysis.group(index) == 'RSS hash'):
             packet_h.rss_hash = packet_analysis.group(index+1)
-            index += 2
+            index += 2 # the number of seperating groups
         else:
             packet_h.rss_hash = None
 
-
         if(packet_analysis.group(index) == 'RSS queue'):
             packet_h.rss_queue = packet_analysis.group(index+1)
-            index += 2
+            index += 2 # the number of seperating groups
         else:
             packet_h.rss_queue = None
 
-
         if(packet_analysis.group(index) == 'hw ptype'):
-            #TODO: split the databy whitespace
             packet_h.hw_ptype = packet_analysis.group(index+1).split(' ')
             packet_h.hw_ptype.pop(len(packet_h.hw_ptype)-1)
-            index += 2
+            index += 2 # the number of seperating groups
         else:
             packet_h.hw_ptype = None
 
-
         if(packet_analysis.group(index) == 'sw ptype'):
-            #TODO: split the databy whitespace
             packet_h.sw_ptype = packet_analysis.group(index+1).split(' ')
             packet_h.sw_ptype.pop(len(packet_h.sw_ptype)-1)
-            index += 2
+            index += 2 # the number of seperating groups
         else:
             packet_h.sw_ptype = None
 
@@ -111,57 +100,46 @@ for packet in packets:
             
         else:
             packet_h.l2_len = None
-        index += 3
+        index += 3 # the number of seperating groups
 
         if(packet_analysis.group(index) == 'inner_l2_len'):
             packet_h.inner_l2_len = packet_analysis.group(index+1)
         else:
             packet_h.inner_l2_len = None
-            print("The inner_l2_len group  index ", index, " : ", packet_analysis.group(index))
-        index += 3
+        index += 3 # the number of seperating groups
 
         if(packet_analysis.group(index) == 'l3_len'):
             packet_h.l3_len = packet_analysis.group(index+1)
         else:
             packet_h.l3_len = None
-            print("The l3_len group index ", index, " : ", packet_analysis.group(index))
-        index += 3
+        index += 3 # the number of seperating groups
 
         if(packet_analysis.group(index) == 'inner_l3_len'):
             packet_h.inner_l3_len = packet_analysis.group(index+1)
         else:
             packet_h.inner_l3_len = None
-            print("The inner_l3_len group index ", index, " : ", packet_analysis.group(index))
-        index += 3
+        index += 3 # the number of seperating groups
 
         if(packet_analysis.group(index) == 'l4_len'):
             packet_h.l4_len = packet_analysis.group(index+1)
         else:
             packet_h.l4_len = None
-            print("The l4_len group  index ", index, ": ", packet_analysis.group(index))
-        index += 2
+        index += 2 # the number of seperating groups
 
         if(packet_analysis.group(index) == 'Receive queue'):
             packet_h.receive_queue = packet_analysis.group(index+1)
         else:
             packet_h.receive_queue = None
-            print("The receive_queue group  index ", index, ": ", packet_analysis.group(index))
-
-        index += 2    
+        index += 2 # the number of seperating groups    
 
 
         if(packet_analysis.group(index) == 'ol_flags'):
-            #TODO: split the databy whitespace
             packet_h.ol_flags = packet_analysis.group(index+1).split(' ')
         else:
             packet_h.ol_flags = None
-            print("The ol_flags group  index ", index, ": ", packet_analysis.group(index))
 
-
-    print("*********************************************************")
     # append the packet into the list
     packets_info.append(packet_h)
-print("--------------------------------------------------------------------")
 # printing the data in formatted way    
 for packet in packets_info:
     print("The src of the packet :", packet.src, " , The dst : ", packet.dst)
@@ -173,7 +151,3 @@ for packet in packets_info:
     print("l4_len : ", packet.l4_len, " , Receive queue : ", packet.receive_queue)
     print("ol_flags : ", packet.ol_flags)
     print("============================================================")
-
-
-# close the file
-packets_file.close()
