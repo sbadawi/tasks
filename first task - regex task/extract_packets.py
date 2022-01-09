@@ -58,7 +58,6 @@ for packet in packets:
                           ol_flags=packet_analysis.group('ol_flags').split(' '))
                           
 
-
     # append the packet into the list
     packets_info.append(packet_h)
 # printing the data in formatted way
